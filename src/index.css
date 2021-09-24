@@ -1,0 +1,32 @@
+html {
+  /* Fix REM */
+  font-size: 10px;
+
+  /* Center content even if a scroll bar is displayed */
+  margin-left: calc(100vw - 100%);
+  margin-right: 0;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Define global box sizing */
+  box-sizing: border-box;
+}
+
+body *,
+body *::before,
+body *::after {
+  /* Define global box sizing */
+  box-sizing: inherit;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
