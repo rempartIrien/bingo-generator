@@ -1,4 +1,11 @@
-import React, { useState } from 'react';
+import React, {
+  KeyboardEvent,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 
 import BingoViewer from '../bingo/BingoViewer';
 
@@ -15,10 +22,64 @@ const HARD_CODED_STUFF: string[] = [
 ];
 
 function Generator(): JSX.Element {
-  const labels: string[] = HARD_CODED_STUFF;
+  const [labels, setLabels] = useState<string[]>(HARD_CODED_STUFF);
   const [title, setTitle] = useState<string>('');
   const [rowNumber, setRowNumber] = useState<number>(3);
-  const [columnNumber, setcolumnNumber] = useState<number>(3);
+  const [columnNumber, setColumnNumber] = useState<number>(3);
+  const [focusIndex, setFocusIndex] = useState<number>();
+  const newLabelInputRef: RefObject<HTMLInputElement> = useRef(null);
+  const inputRefs: (HTMLInputElement | null)[] = useMemo(
+    () => [...Array(labels.length)].map(() => null),
+    [labels.length]
+  );
+
+  useEffect(() => {
+    if (!focusIndex && focusIndex !== 0) {
+      return;
+    }
+    const ref: HTMLInputElement | null = inputRefs[focusIndex];
+    if (ref) {
+      ref.focus();
+    }
+  }, [inputRefs, focusIndex]);
+
+  function setLabel(value: string, index: number): void {
+    const newLabels: string[] = [
+      ...labels.slice(0, index),
+      value,
+      ...labels.slice(index + 1)
+    ];
+    setLabels(newLabels);
+  }
+
+  function removeLabelIfNeeded(value: string, index: number): void {
+    if (!value) {
+      const newLabels: string[] = [
+        ...labels.slice(0, index),
+        ...labels.slice(index + 1)
+      ];
+      setLabels(newLabels);
+    }
+  }
+
+  function addLabel(value: string): void {
+    if (value) {
+      const newLabels: string[] = [...labels, value];
+      setLabels(newLabels);
+      if (newLabelInputRef.current) {
+        newLabelInputRef.current.value = '';
+      }
+      setFocusIndex(labels.length);
+    }
+  }
+
+  function onFocus({ key, shiftKey }: KeyboardEvent, index: number): void {
+    if (key === 'Tab' && !shiftKey && !labels[index]) {
+      setFocusIndex(index);
+    } else {
+      setFocusIndex(void 0);
+    }
+  }
 
   return (
     <section>
@@ -33,6 +94,34 @@ function Generator(): JSX.Element {
             onChange={(event) => setTitle(event.target.value)}
           />
         </label>
+        <fieldset>
+          <legend>Labels:</legend>
+          <ol>
+            {labels.map((label, index) => (
+              <li key={index}>
+                <input
+                  ref={(e) => (inputRefs[index] = e)}
+                  type="text"
+                  name={`label_${index}`}
+                  value={label}
+                  onChange={(event) => setLabel(event.target.value, index)}
+                  onKeyDown={(event) => onFocus(event, index)}
+                  onBlur={(event) =>
+                    removeLabelIfNeeded(event.target.value, index)
+                  }
+                />
+              </li>
+            ))}
+            <li>
+              <input
+                ref={newLabelInputRef}
+                type="text"
+                name={`newLabel`}
+                onChange={(event) => addLabel(event.target.value)}
+              />
+            </li>
+          </ol>
+        </fieldset>
         <label>
           <span>Number of rows: </span>
           <input
@@ -53,7 +142,7 @@ function Generator(): JSX.Element {
             step="1"
             value={columnNumber}
             onChange={(event) =>
-              setValidNumber(event.target.value, setcolumnNumber)
+              setValidNumber(event.target.value, setColumnNumber)
             }
           />
         </label>
