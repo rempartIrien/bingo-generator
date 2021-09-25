@@ -7,6 +7,7 @@ import React, {
   useState
 } from 'react';
 
+import { encode } from '../base64.utils';
 import BingoViewer from '../bingo/BingoViewer';
 
 const HARD_CODED_STUFF: string[] = [
@@ -24,6 +25,7 @@ const HARD_CODED_STUFF: string[] = [
 function Generator(): JSX.Element {
   const [labels, setLabels] = useState<string[]>(HARD_CODED_STUFF);
   const [title, setTitle] = useState<string>('');
+  const [generatedUrl, setGeneratedUrl] = useState<string>('');
   const [rowNumber, setRowNumber] = useState<number>(3);
   const [columnNumber, setColumnNumber] = useState<number>(3);
   const [focusIndex, setFocusIndex] = useState<number>();
@@ -32,6 +34,19 @@ function Generator(): JSX.Element {
     () => [...Array(labels.length)].map(() => null),
     [labels.length]
   );
+
+  useEffect(() => {
+    const encodedContext: string = encode(
+      JSON.stringify({
+        title,
+        labels,
+        rowNumber,
+        columnNumber
+      })
+    );
+    const url: string = `${document.location.origin}/bingo?context=${encodedContext}`;
+    setGeneratedUrl(url);
+  }, [title, labels, rowNumber, columnNumber]);
 
   useEffect(() => {
     if (!focusIndex && focusIndex !== 0) {
@@ -147,6 +162,7 @@ function Generator(): JSX.Element {
           />
         </label>
       </form>
+      {generatedUrl && <p>Bingo url: {generatedUrl}</p>}
       <BingoViewer
         title={title}
         labels={labels}

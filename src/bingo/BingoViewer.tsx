@@ -10,7 +10,11 @@ interface BingoViewerProps {
 }
 
 function BingoViewer(props: BingoViewerProps): JSX.Element {
-  if (!isNumberValid(props.rowNumber) || !isNumberValid(props.columnNumber)) {
+  if (
+    !isNumberValid(props.rowNumber) ||
+    !isNumberValid(props.columnNumber) ||
+    !Array.isArray(props.labels)
+  ) {
     return <p>Can&apos;t generate bingo, please check your parameters.</p>;
   }
   const randomizedStuff: string[][] = toGrid(
@@ -37,7 +41,7 @@ function BingoViewer(props: BingoViewerProps): JSX.Element {
   );
 }
 
-function isNumberValid(value: number): boolean {
+function isNumberValid(value: number | undefined): boolean {
   return !!(value || value === 0);
 }
 
