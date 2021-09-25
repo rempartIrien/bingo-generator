@@ -2,14 +2,14 @@ import React from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import './App.css';
-import { ABOUT_ROUTE, GENERATOR_ROUTE, GRID_ROUTE } from './routes';
+import { ABOUT_ROUTE, BINGO_ROUTE, GENERATOR_ROUTE } from './routes';
 
 function App(): JSX.Element {
   return (
     <BrowserRouter>
       <main className="App">
         <Switch>
-          {[ABOUT_ROUTE, GENERATOR_ROUTE, GRID_ROUTE].map(
+          {[ABOUT_ROUTE, BINGO_ROUTE, GENERATOR_ROUTE].map(
             ({ path, component }) => (
               <Route key={path} path={path} component={component}></Route>
             )

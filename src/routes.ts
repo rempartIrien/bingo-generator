@@ -1,8 +1,8 @@
 import { FC } from 'react';
 
 import About from './about';
+import Bingo from './bingo';
 import Generator from './generator';
-import Grid from './grid';
 
 export interface RouteDescription {
   path: string;
@@ -14,12 +14,12 @@ export const ABOUT_ROUTE: RouteDescription = {
   component: About
 };
 
+export const BINGO_ROUTE: RouteDescription = {
+  path: '/bingo',
+  component: Bingo
+};
+
 export const GENERATOR_ROUTE: RouteDescription = {
   path: '/generator',
   component: Generator
-};
-
-export const GRID_ROUTE: RouteDescription = {
-  path: '/grid',
-  component: Grid
 };

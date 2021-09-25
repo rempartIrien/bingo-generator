@@ -14,7 +14,7 @@ const HARD_CODED_STUFF: string[] = [
   'nine'
 ];
 
-function Grid(): JSX.Element {
+function Bingo(): JSX.Element {
   const randomizedStuff: string[][] = toGrid(
     shuffleArray(HARD_CODED_STUFF),
     3,
@@ -36,4 +36,4 @@ function Grid(): JSX.Element {
   );
 }
 
-export default Grid;
+export default Bingo;
