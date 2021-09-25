@@ -96,6 +96,10 @@ function Generator(): JSX.Element {
     }
   }
 
+  async function copyToClipboard(generatedUrl: string): Promise<void> {
+    await navigator.clipboard.writeText(generatedUrl);
+  }
+
   return (
     <section>
       <h1>Generator</h1>
@@ -162,7 +166,22 @@ function Generator(): JSX.Element {
           />
         </label>
       </form>
-      {generatedUrl && <p>Bingo url: {generatedUrl}</p>}
+      {generatedUrl && (
+        <>
+          <p>
+            Bingo url:{' '}
+            <a target="_blank" rel="noreferrer noopener" href={generatedUrl}>
+              {generatedUrl}
+            </a>
+          </p>
+          <p>
+            Copy the above url or click this button to share it:&nbsp;
+            <button type="button" onClick={() => copyToClipboard(generatedUrl)}>
+              Copy url to clipboard
+            </button>
+          </p>
+        </>
+      )}
       <BingoViewer
         title={title}
         labels={labels}
