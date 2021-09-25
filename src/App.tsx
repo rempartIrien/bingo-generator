@@ -1,14 +1,24 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import './App.css';
-import Grid from './grid/Grid';
+import { ABOUT_ROUTE, GENERATOR_ROUTE, GRID_ROUTE } from './routes';
 
 function App(): JSX.Element {
   return (
     <BrowserRouter>
       <main className="App">
-        <Grid></Grid>
+        <Switch>
+          {[ABOUT_ROUTE, GENERATOR_ROUTE, GRID_ROUTE].map(
+            ({ path, component }) => (
+              <Route key={path} path={path} component={component}></Route>
+            )
+          )}
+          <Route exact path="/">
+            <Redirect to="/generator"></Redirect>
+          </Route>
+          <Route render={() => <h1>404: page not found</h1>} />
+        </Switch>
       </main>
     </BrowserRouter>
   );
