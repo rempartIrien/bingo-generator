@@ -5,22 +5,16 @@ import { shuffleArray, toGrid } from './random.util';
 interface BingoViewerProps {
   title: string;
   labels: string[];
-  rowNumber: number;
-  columnNumber: number;
+  size: number;
 }
 
 function BingoViewer(props: BingoViewerProps): JSX.Element {
-  if (
-    !isNumberValid(props.rowNumber) ||
-    !isNumberValid(props.columnNumber) ||
-    !Array.isArray(props.labels)
-  ) {
+  if (!isNumberValid(props.size) || !Array.isArray(props.labels)) {
     return <p>Can&apos;t generate bingo, please check your parameters.</p>;
   }
   const randomizedStuff: string[][] = toGrid(
     shuffleArray(props.labels),
-    props.rowNumber,
-    props.columnNumber
+    props.size
   );
 
   return (

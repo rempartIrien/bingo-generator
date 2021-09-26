@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { encode } from '../base64.utils';
 import BingoViewer from '../bingo/BingoViewer';
 
-import GridDimensionInput from './GridDimensionInput';
 import LabelInputList from './LabelInputList';
+import NumberInput from './NumberInput';
 import UrlViewer from './UrlViewer';
 
 const HARD_CODED_STUFF: string[] = [
@@ -23,21 +23,19 @@ function Generator(): JSX.Element {
   const [labels, setLabels] = useState<string[]>(HARD_CODED_STUFF);
   const [title, setTitle] = useState<string>('');
   const [generatedUrl, setGeneratedUrl] = useState<string>('');
-  const [rowNumber, setRowNumber] = useState<number>(3);
-  const [columnNumber, setColumnNumber] = useState<number>(3);
+  const [size, setSize] = useState<number>(3);
 
   useEffect(() => {
     const encodedContext: string = encode(
       JSON.stringify({
         title,
         labels,
-        rowNumber,
-        columnNumber
+        size
       })
     );
     const url: string = `${document.location.origin}/bingo?context=${encodedContext}`;
     setGeneratedUrl(url);
-  }, [title, labels, rowNumber, columnNumber]);
+  }, [title, labels, size]);
 
   return (
     <section>
@@ -52,21 +50,16 @@ function Generator(): JSX.Element {
             onChange={(event) => setTitle(event.target.value)}
           />
         </label>
+        <NumberInput
+          label="Size"
+          value={size}
+          valueChange={setSize}></NumberInput>
         <LabelInputList
           labels={labels}
           labelsChange={setLabels}></LabelInputList>
-        <GridDimensionInput
-          rowNumber={rowNumber}
-          columnNumber={columnNumber}
-          rowNumberChange={setRowNumber}
-          columnNumberChange={setColumnNumber}></GridDimensionInput>
       </form>
       {generatedUrl && <UrlViewer url={generatedUrl}></UrlViewer>}
-      <BingoViewer
-        title={title}
-        labels={labels}
-        rowNumber={rowNumber}
-        columnNumber={columnNumber}></BingoViewer>
+      <BingoViewer title={title} labels={labels} size={size}></BingoViewer>
     </section>
   );
 }

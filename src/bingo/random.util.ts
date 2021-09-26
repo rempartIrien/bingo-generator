@@ -1,7 +1,7 @@
 export function toGrid(
   stuff: string[],
   rowNumber: number,
-  columnNumber: number
+  columnNumber: number = rowNumber
 ): string[][] {
   if (stuff.length < rowNumber * columnNumber) {
     const root: number = Math.floor(Math.sqrt(stuff.length));
