@@ -4,11 +4,11 @@ Hey there! You need to generate Bingo grids for some occasion? You're at the rig
 
 ## Overview
 
-### Functionally
+### Functional overview
 
 This project is a website that generates Bingo grids. Tile disposition is random and grid dimensions can be specified. Grid data are embedded in shareable URLs so that there is no need for servers.
 
-### Technically
+### Technical overview
 
 This is my first project with React and its ecosystem. Here are some librairies I discovered:
 
@@ -18,6 +18,12 @@ This is my first project with React and its ecosystem. Here are some librairies 
 - [styled-components](https://styled-components.com 'styled-components')
 
 [TypeScript](https://www.typescriptlang.org 'TypeScript') is heavily used as well.
+
+## Install dependencies
+
+```bash
+npm install
+```
 
 ## Build the project
 
