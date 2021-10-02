@@ -15,7 +15,7 @@ This is my first project with React and its ecosystem. Here are some librairies 
 - [React](https://reactjs.org 'React')
 - [React Router](https://reactrouter.com 'React Router')
 - [Jest](https://jestjs.io 'Jest')
-- [styled-components](https://styled-components.com 'styled-components')
+- [Linaria](https://linaria.dev 'Linaria')
 
 [TypeScript](https://www.typescriptlang.org 'TypeScript') is heavily used as well.
 
