@@ -11,7 +11,7 @@ const Main = styled.main`
   font-size: 1.6rem;
   min-height: 100vh;
   background-color: var(--color-background);
-  color: var(--color-regular);
+  color: var(--color-regular-text);
 
   :global() {
     body {

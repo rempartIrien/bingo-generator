@@ -15,11 +15,16 @@ interface Tile {
   columnIndex: number;
 }
 
+interface CompleteStuffIndices {
+  diagonals: number[];
+  rows: number[];
+  columns: number[];
+}
+
 const label: string = css`
   aspect-ratio: 1;
   display: block;
-  border: 1px solid var(--color-regular);
-  padding: 1rem;
+  border: 1px solid var(--color-regular-text);
   word-break: break-word;
   text-align: center;
 
@@ -34,7 +39,9 @@ const label: string = css`
       display: flex;
       justify-content: center;
       align-items: center;
-      color: var(--color-regular);
+      color: var(--color-regular-text);
+      padding: 1rem;
+      cursor: pointer;
 
       &::before {
         display: none;
@@ -46,15 +53,13 @@ const label: string = css`
         height: 90%;
         width: 90%;
         border-radius: 50%;
-        border: 10px solid var(--color-accent);
+        border: 10px solid var(--color-select);
       }
     }
   }
 
   & > input:checked {
     & + span {
-      color: var(--color-primary);
-
       &::before {
         display: block;
       }
@@ -62,16 +67,24 @@ const label: string = css`
   }
 `;
 
+const inBingo: string = css`
+  background-color: var(--color-primary);
+  & > input + span {
+    color: var(--color-select-text);
+  }
+`;
+
 // See template for grid-template-columns
 const Grid = styled.div`
   display: grid;
   gap: 0;
-  border: 1px solid var(--color-regular);
+  border: 1px solid var(--color-regular-text);
 `;
 
 function BingoViewer({ title, labels, size }: BingoViewerProps): JSX.Element {
   const [selectedTiles, setSelectedTiles] = useState<Tile[]>([]);
-  const [winningMessage, setWinningMessage] = useState<string>();
+  const [completeStuffIndices, setCompleteStuffIndices] =
+    useState<CompleteStuffIndices>();
   const [randomizedStuff, setRandomizedStuff] = useState<string[][]>();
 
   useEffect(() => {
@@ -83,10 +96,18 @@ function BingoViewer({ title, labels, size }: BingoViewerProps): JSX.Element {
   }, [labels, size]);
 
   useEffect(() => {
-    if (isComplete(selectedTiles, size)) {
-      setWinningMessage('BINGO');
+    const indices: CompleteStuffIndices = getCompleteStuffIndices(
+      selectedTiles,
+      size
+    );
+    if (
+      !indices.columns.length &&
+      !indices.rows.length &&
+      !indices.diagonals.length
+    ) {
+      setCompleteStuffIndices(void 0);
     } else {
-      setWinningMessage('');
+      setCompleteStuffIndices(indices);
     }
   }, [selectedTiles, size]);
 
@@ -113,27 +134,36 @@ function BingoViewer({ title, labels, size }: BingoViewerProps): JSX.Element {
     <section>
       <h2>{title}</h2>
       <form>
-        {winningMessage}
         <Grid style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}>
           {randomizedStuff.map((array, rowIndex) =>
-            array.map((value, columnIndex) => (
-              <label key={`${rowIndex}_${columnIndex}`} className={label}>
-                <input
-                  type="checkbox"
-                  checked={selectedTiles.some(
-                    (t) =>
-                      t.rowIndex === rowIndex && t.columnIndex === columnIndex
-                  )}
-                  onChange={(event) =>
-                    toggleTile(event.target.checked, rowIndex, columnIndex)
-                  }
-                />
-                <span>{value}</span>
-              </label>
-            ))
+            array.map((value, columnIndex) => {
+              const isInBingo: boolean = isTileInBingo(
+                completeStuffIndices,
+                rowIndex,
+                columnIndex,
+                size
+              );
+              const className: string = isInBingo
+                ? `${label} ${inBingo}`
+                : label;
+              return (
+                <label key={`${rowIndex}_${columnIndex}`} className={className}>
+                  <input
+                    type="checkbox"
+                    checked={selectedTiles.some(
+                      (t) =>
+                        t.rowIndex === rowIndex && t.columnIndex === columnIndex
+                    )}
+                    onChange={(event) =>
+                      toggleTile(event.target.checked, rowIndex, columnIndex)
+                    }
+                  />
+                  <span>{value}</span>
+                </label>
+              );
+            })
           )}
         </Grid>
-        {winningMessage}
       </form>
     </section>
   );
@@ -143,19 +173,53 @@ function isNumberValid(value: number | undefined): boolean {
   return !!(value || value === 0);
 }
 
-function isComplete(tiles: Tile[], size: number): boolean {
-  return (
-    hasDiagonalComplete(tiles, size) ||
-    hasCompleteRow(tiles, size) ||
-    hasCompleteColumn(tiles, size)
-  );
+function isTileInBingo(
+  completeStuffIndices: CompleteStuffIndices | undefined,
+  rowIndex: number,
+  columnIndex: number,
+  size: number
+): boolean {
+  if (!completeStuffIndices) {
+    return false;
+  }
+  // Row
+  if (completeStuffIndices.rows.includes(rowIndex)) {
+    return true;
+  }
+  // Column
+  if (completeStuffIndices.columns.includes(columnIndex)) {
+    return true;
+  }
+  // Diagonal 1
+  if (rowIndex === columnIndex && completeStuffIndices.diagonals.includes(0)) {
+    return true;
+  }
+  // Diagonal 2
+  if (
+    columnIndex + rowIndex === size - 1 &&
+    completeStuffIndices.diagonals.includes(1)
+  ) {
+    return true;
+  }
+  return false;
 }
 
-function hasCompleteRow(tiles: Tile[], rowNumber: number): boolean {
+function getCompleteStuffIndices(
+  tiles: Tile[],
+  size: number
+): CompleteStuffIndices {
+  return {
+    diagonals: getCompleteDiagobalIndices(tiles, size),
+    rows: getCompleteRowIndices(tiles, size),
+    columns: getCompleteColumnsIndices(tiles, size)
+  };
+}
+
+function getCompleteRowIndices(tiles: Tile[], rowNumber: number): number[] {
   return hasRowOrColumnComplete(tiles, rowNumber, 'rowIndex');
 }
 
-function hasCompleteColumn(tiles: Tile[], rowNumber: number): boolean {
+function getCompleteColumnsIndices(tiles: Tile[], rowNumber: number): number[] {
   return hasRowOrColumnComplete(tiles, rowNumber, 'columnIndex');
 }
 
@@ -163,7 +227,7 @@ function hasRowOrColumnComplete(
   tiles: Tile[],
   size: number,
   key: keyof Tile
-): boolean {
+): number[] {
   type Registry = Record<Tile[typeof key], number>;
   const registry: Registry = [...Array(size)].reduce(
     (acc: Registry, cur, index) => ({ ...acc, [index]: 0 }),
@@ -173,16 +237,22 @@ function hasRowOrColumnComplete(
     (acc, cur) => ({ ...acc, [cur[key]]: acc[cur[key]] + 1 }),
     registry
   );
-  return Object.values(usagesByKey).some((v) => v === size);
+  return Object.values(usagesByKey).reduce(
+    (acc, v, index) => (v === size ? acc.concat(index) : acc),
+    [] as number[]
+  );
 }
 
-function hasDiagonalComplete(tiles: Tile[], size: number): boolean {
+function getCompleteDiagobalIndices(tiles: Tile[], size: number): number[] {
   const firstDiagonalComplete: boolean =
     tiles.filter((t) => t.rowIndex === t.columnIndex).length === size;
   const secondDiagonalComplete: boolean =
     tiles.filter((t) => t.rowIndex + t.columnIndex === size - 1).length ===
     size;
-  return firstDiagonalComplete || secondDiagonalComplete;
+  return [firstDiagonalComplete, secondDiagonalComplete].reduce(
+    (acc, cur, index) => (cur ? acc.concat(index) : acc),
+    [] as number[]
+  );
 }
 
 export default BingoViewer;

@@ -15,14 +15,32 @@ const item: string = css`
   }
 `;
 
+const link: string = css`
+  text-decoration: none;
+
+  &,
+  &:hover,
+  &:visited {
+    color: var(--color-select);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 function Menu(): JSX.Element {
   return (
     <ol className={list}>
       <li className={item}>
-        <Link to="/">Home</Link>
+        <Link className={link} to="/">
+          Home
+        </Link>
       </li>
       <li className={item}>
-        <Link to="/about">About</Link>
+        <Link className={link} to="/about">
+          About
+        </Link>
       </li>
     </ol>
   );
