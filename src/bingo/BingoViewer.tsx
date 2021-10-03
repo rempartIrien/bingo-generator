@@ -1,3 +1,5 @@
+import { css } from '@linaria/core';
+import { styled } from '@linaria/react';
 import React, { useEffect, useState } from 'react';
 
 import { shuffleArray, toGrid } from './random.util';
@@ -13,29 +15,80 @@ interface Tile {
   columnIndex: number;
 }
 
-function BingoViewer(props: BingoViewerProps): JSX.Element {
+const label: string = css`
+  aspect-ratio: 1;
+  display: block;
+  border: 1px solid var(--color-regular);
+  padding: 1rem;
+  word-break: break-word;
+  text-align: center;
+
+  & > input {
+    display: none;
+
+    & + span {
+      display: block;
+      position: relative;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--color-regular);
+
+      &::before {
+        display: none;
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 90%;
+        width: 90%;
+        border-radius: 50%;
+        border: 10px solid var(--color-accent);
+      }
+    }
+  }
+
+  & > input:checked {
+    & + span {
+      color: var(--color-primary);
+
+      &::before {
+        display: block;
+      }
+    }
+  }
+`;
+
+// See template for grid-template-columns
+const Grid = styled.div`
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--color-regular);
+`;
+
+function BingoViewer({ title, labels, size }: BingoViewerProps): JSX.Element {
   const [selectedTiles, setSelectedTiles] = useState<Tile[]>([]);
   const [winningMessage, setWinningMessage] = useState<string>();
   const [randomizedStuff, setRandomizedStuff] = useState<string[][]>();
 
   useEffect(() => {
-    if (isNumberValid(props.size) && Array.isArray(props.labels)) {
-      const newStuff: string[][] = toGrid(
-        shuffleArray(props.labels),
-        props.size
-      );
+    if (isNumberValid(size) && Array.isArray(labels)) {
+      const newStuff: string[][] = toGrid(shuffleArray(labels), size);
       setRandomizedStuff(newStuff);
       setSelectedTiles([]);
     }
-  }, [props.labels, props.size]);
+  }, [labels, size]);
 
   useEffect(() => {
-    if (isComplete(selectedTiles, props.size)) {
+    if (isComplete(selectedTiles, size)) {
       setWinningMessage('BINGO');
     } else {
       setWinningMessage('');
     }
-  }, [selectedTiles, props.size]);
+  }, [selectedTiles, size]);
 
   if (!randomizedStuff) {
     return <p>Can&apos;t generate bingo, please check your parameters.</p>;
@@ -57,43 +110,32 @@ function BingoViewer(props: BingoViewerProps): JSX.Element {
   }
 
   return (
-    <>
-      <h2>{props.title}</h2>
+    <section>
+      <h2>{title}</h2>
       <form>
         {winningMessage}
-        <table>
-          <tbody>
-            {randomizedStuff.map((array, rowIndex) => (
-              <tr key={rowIndex}>
-                {array.map((value, columnIndex) => (
-                  <td key={`${rowIndex}_${columnIndex}`}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={selectedTiles.some(
-                          (t) =>
-                            t.rowIndex === rowIndex &&
-                            t.columnIndex === columnIndex
-                        )}
-                        onChange={(event) =>
-                          toggleTile(
-                            event.target.checked,
-                            rowIndex,
-                            columnIndex
-                          )
-                        }
-                      />
-                      {value}
-                    </label>
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Grid style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}>
+          {randomizedStuff.map((array, rowIndex) =>
+            array.map((value, columnIndex) => (
+              <label key={`${rowIndex}_${columnIndex}`} className={label}>
+                <input
+                  type="checkbox"
+                  checked={selectedTiles.some(
+                    (t) =>
+                      t.rowIndex === rowIndex && t.columnIndex === columnIndex
+                  )}
+                  onChange={(event) =>
+                    toggleTile(event.target.checked, rowIndex, columnIndex)
+                  }
+                />
+                <span>{value}</span>
+              </label>
+            ))
+          )}
+        </Grid>
         {winningMessage}
       </form>
-    </>
+    </section>
   );
 }
 

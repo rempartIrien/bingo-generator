@@ -7,6 +7,8 @@ import React, {
   useState
 } from 'react';
 
+import { INPUT_DEFAULT_STYLE } from '../style/base-style';
+
 interface LabelInputListPropos {
   labels: string[];
   labelsChange: (labels: string[]) => unknown;
@@ -78,6 +80,7 @@ function LabelInputList({
         {labels.map((label, index) => (
           <li key={index}>
             <input
+              className={INPUT_DEFAULT_STYLE}
               ref={(e) => (inputRefs[index] = e)}
               type="text"
               name={`label_${index}`}
@@ -90,6 +93,7 @@ function LabelInputList({
         ))}
         <li>
           <input
+            className={INPUT_DEFAULT_STYLE}
             ref={newLabelInputRef}
             type="text"
             name={`newLabel`}

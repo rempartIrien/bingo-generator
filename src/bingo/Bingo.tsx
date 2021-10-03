@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { decode } from '../base64.utils';
@@ -6,14 +6,28 @@ import { decode } from '../base64.utils';
 import BingoViewer from './BingoViewer';
 
 function Bingo(): JSX.Element {
-  const query: URLSearchParams = useQuery();
-  if (!query.has('context') || !query.get('context')) {
+  const [decryptedContext, setDecryptedContext] =
+    useState<Record<string, unknown>>();
+  const context: string | null = useQueryContext();
+
+  useEffect(() => {
+    if (context) {
+      setDecryptedContext(JSON.parse(decode(context)));
+    } else {
+      setDecryptedContext(void 0);
+    }
+  }, [context]);
+
+  if (!decryptedContext) {
     return <p>Too bad</p>; // FIXME: link to generator page
   }
-  const context: string = query.get('context') as string;
-  const decryptedContext: string = decode(context);
-  console.log(decryptedContext);
-  return <BingoViewer {...JSON.parse(decryptedContext)}></BingoViewer>;
+
+  return (
+    <BingoViewer
+      title={decryptedContext.title as string}
+      labels={decryptedContext.labels as string[]}
+      size={decryptedContext.size as number}></BingoViewer>
+  );
 }
 
 /**
@@ -22,8 +36,8 @@ function Bingo(): JSX.Element {
  *
  * See https://reactrouter.com/web/example/query-parameters
  */
-function useQuery(): URLSearchParams {
-  return new URLSearchParams(useLocation().search);
+function useQueryContext(): string | null {
+  return new URLSearchParams(useLocation().search).get('context');
 }
 
 export default Bingo;

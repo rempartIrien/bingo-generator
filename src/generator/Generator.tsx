@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { encode } from '../base64.utils';
 import BingoViewer from '../bingo/BingoViewer';
+import { INPUT_DEFAULT_STYLE } from '../style/base-style';
 
 import LabelInputList from './LabelInputList';
 import NumberInput from './NumberInput';
@@ -44,6 +45,7 @@ function Generator(): JSX.Element {
         <label>
           <span>Title: </span>
           <input
+            className={INPUT_DEFAULT_STYLE}
             type="text"
             name="title"
             value={title}

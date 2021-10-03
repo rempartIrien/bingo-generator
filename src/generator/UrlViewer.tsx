@@ -1,8 +1,15 @@
+import { css } from '@linaria/core';
 import React from 'react';
 
 interface UrlViewerProps {
   url: string;
 }
+
+const a: string = css`
+   {
+    word-break: break-word;
+  }
+`;
 
 function UrlViewer({ url }: UrlViewerProps): JSX.Element {
   async function copyToClipboard(url: string): Promise<void> {
@@ -13,7 +20,7 @@ function UrlViewer({ url }: UrlViewerProps): JSX.Element {
     <>
       <p>
         Bingo url:{' '}
-        <a target="_blank" rel="noreferrer noopener" href={url}>
+        <a className={a} target="_blank" rel="noreferrer noopener" href={url}>
           {url}
         </a>
       </p>

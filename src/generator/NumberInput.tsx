@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { INPUT_DEFAULT_STYLE } from '../style/base-style';
+
 interface NumberInputProps {
   label: string;
   value: number;
@@ -24,6 +26,7 @@ function NumberInput({
     <label>
       <span>{label}</span>
       <input
+        className={INPUT_DEFAULT_STYLE}
         type="number"
         name="columnNumber"
         step="1"

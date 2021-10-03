@@ -90,7 +90,7 @@ module.exports = {
   overrides: [
     {
       // enable the rule specifically for TypeScript files
-      files: ['*.ts', '*.tsx'],
+      files: ['src/**/*.ts', 'src/**/*.tsx'],
       extends: [
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',

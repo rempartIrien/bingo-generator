@@ -1,6 +1,7 @@
 html {
   /* Fix REM */
   font-size: 10px;
+  font-size: 62.5%;
 
   /* Center content even if a scroll bar is displayed */
   margin-left: calc(100vw - 100%);
