@@ -29,7 +29,7 @@ const DEFAULT: Record<string, unknown> = {
 const DEFAULT_STRING: string = encode(JSON.stringify(DEFAULT));
 
 function Generator(): JSX.Element {
-  const { context: currentSearch, decryptedContext }: Context = useUrlContext();
+  const { context, decryptedContext }: Context = useUrlContext();
   const history = useHistory();
 
   const [labels, setLabels] = useState<string[]>();
@@ -39,18 +39,16 @@ function Generator(): JSX.Element {
   const [generatedUrl, setGeneratedUrl] = useState<string>();
 
   useEffect(() => {
-    if (!currentSearch) {
+    if (!context) {
       setSearch(`context=${DEFAULT_STRING}`);
-    }
-  }, [currentSearch]);
-
-  useEffect(() => {
-    if (decryptedContext) {
+    } else if (decryptedContext) {
       setLabels(decryptedContext.labels as string[]);
       setTitle(decryptedContext.title as string);
       setSize(decryptedContext.size as number);
+      // Trigger URL generation.
+      setSearch(`context=${context}`);
     }
-  }, [decryptedContext]);
+  }, [context, decryptedContext]);
 
   useEffect(() => {
     if (search) {
@@ -62,11 +60,11 @@ function Generator(): JSX.Element {
     }
   }, [search, history]);
 
-  function updateContext(key: string, value: unknown): void {
+  function updateContext(values: Record<string, unknown>): void {
     const encodedContext: string = encode(
       JSON.stringify({
         ...decryptedContext,
-        [key]: value
+        ...values
       })
     );
     setSearch(`context=${encodedContext}`);
@@ -87,18 +85,16 @@ function Generator(): JSX.Element {
             type="text"
             name="title"
             value={title}
-            onChange={(event) => updateContext('title', event.target.value)}
+            onChange={(event) => updateContext({ title: event.target.value })}
           />
         </label>
         <NumberInput
           label="Size"
           value={size}
-          valueChange={(size) => updateContext('size', size)}></NumberInput>
+          valueChange={(size) => updateContext({ size })}></NumberInput>
         <LabelInputList
           labels={labels}
-          labelsChange={(labels) =>
-            updateContext('labels', labels)
-          }></LabelInputList>
+          labelsChange={(labels) => updateContext({ labels })}></LabelInputList>
       </form>
       {generatedUrl && <UrlViewer url={generatedUrl}></UrlViewer>}
       <BingoViewer title={title} labels={labels} size={size}></BingoViewer>
