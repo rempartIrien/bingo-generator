@@ -3,7 +3,12 @@ import { useLocation } from 'react-router-dom';
 
 import { decode } from './base64.utils';
 
-export function useUrlContext(): Record<string, unknown> | undefined {
+export interface Context {
+  context: string | null;
+  decryptedContext: Record<string, unknown> | undefined;
+}
+
+export function useUrlContext(): Context {
   const [decryptedContext, setDecryptedContext] =
     useState<Record<string, unknown>>();
   const context: string | null = useQueryContext();
@@ -16,7 +21,7 @@ export function useUrlContext(): Record<string, unknown> | undefined {
     }
   }, [context]);
 
-  return decryptedContext;
+  return { context, decryptedContext };
 }
 
 /**
@@ -25,6 +30,6 @@ export function useUrlContext(): Record<string, unknown> | undefined {
  *
  * See https://reactrouter.com/web/example/query-parameters
  */
-export function useQueryContext(): string | null {
+function useQueryContext(): string | null {
   return new URLSearchParams(useLocation().search).get('context');
 }

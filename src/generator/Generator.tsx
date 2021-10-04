@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { encode } from '../base64.utils';
 import BingoViewer from '../bingo/BingoViewer';
 import { INPUT_DEFAULT_STYLE } from '../style/base-style';
-import { useQueryContext, useUrlContext } from '../url-context.hook';
+import { Context, useUrlContext } from '../url-context.hook';
 
 import LabelInputList from './LabelInputList';
 import NumberInput from './NumberInput';
@@ -29,8 +29,7 @@ const DEFAULT: Record<string, unknown> = {
 const DEFAULT_STRING: string = encode(JSON.stringify(DEFAULT));
 
 function Generator(): JSX.Element {
-  const currentSearch: string | null = useQueryContext();
-  const decryptedContext: Record<string, unknown> | undefined = useUrlContext();
+  const { context: currentSearch, decryptedContext }: Context = useUrlContext();
   const history = useHistory();
 
   const [labels, setLabels] = useState<string[]>();
