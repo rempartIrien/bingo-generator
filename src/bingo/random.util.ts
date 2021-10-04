@@ -1,19 +1,3 @@
-export function toGrid(
-  stuff: string[],
-  rowNumber: number,
-  columnNumber: number = rowNumber
-): string[][] {
-  if (stuff.length < rowNumber * columnNumber) {
-    const root: number = Math.floor(Math.sqrt(stuff.length));
-    return toGrid(stuff, root, root);
-  }
-  return [...Array(rowNumber)].map((v, rowIndex) =>
-    [...Array(columnNumber)].map(
-      (v, colIndex) => stuff[rowIndex * rowNumber + colIndex]
-    )
-  );
-}
-
 export function shuffleArray(stuff: string[]): string[] {
   return stuff.reduce(
     ({ remaining, result }) => {

@@ -1,8 +1,8 @@
 import { css } from '@linaria/core';
 import { styled } from '@linaria/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-import { shuffleArray, toGrid } from './random.util';
+import { shuffleArray } from './random.util';
 
 interface BingoViewerProps {
   title: string;
@@ -83,22 +83,26 @@ const Grid = styled.div`
 
 function BingoViewer({ title, labels, size }: BingoViewerProps): JSX.Element {
   const [selectedTiles, setSelectedTiles] = useState<Tile[]>([]);
+  const gridSize: number = useMemo(
+    () => Math.min(Math.floor(Math.sqrt(labels.length)), size),
+    [size, labels]
+  );
   const [completeStuffIndices, setCompleteStuffIndices] =
     useState<CompleteStuffIndices>();
-  const [randomizedStuff, setRandomizedStuff] = useState<string[][]>();
+  const [randomizedStuff, setRandomizedStuff] = useState<string[]>();
 
   useEffect(() => {
-    if (isNumberValid(size) && Array.isArray(labels)) {
-      const newStuff: string[][] = toGrid(shuffleArray(labels), size);
+    if (Array.isArray(labels)) {
+      const newStuff: string[] = shuffleArray(labels);
       setRandomizedStuff(newStuff);
       setSelectedTiles([]);
     }
-  }, [labels, size]);
+  }, [labels]);
 
   useEffect(() => {
     const indices: CompleteStuffIndices = getCompleteStuffIndices(
       selectedTiles,
-      size
+      gridSize
     );
     if (
       !indices.columns.length &&
@@ -109,7 +113,7 @@ function BingoViewer({ title, labels, size }: BingoViewerProps): JSX.Element {
     } else {
       setCompleteStuffIndices(indices);
     }
-  }, [selectedTiles, size]);
+  }, [selectedTiles, gridSize]);
 
   if (!randomizedStuff) {
     return <p>Can&apos;t generate bingo, please check your parameters.</p>;
@@ -134,43 +138,37 @@ function BingoViewer({ title, labels, size }: BingoViewerProps): JSX.Element {
     <section>
       <h2>{title}</h2>
       <form>
-        <Grid style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}>
-          {randomizedStuff.map((array, rowIndex) =>
-            array.map((value, columnIndex) => {
-              const isInBingo: boolean = isTileInBingo(
-                completeStuffIndices,
-                rowIndex,
-                columnIndex,
-                size
-              );
-              const className: string = isInBingo
-                ? `${label} ${inBingo}`
-                : label;
-              return (
-                <label key={`${rowIndex}_${columnIndex}`} className={className}>
-                  <input
-                    type="checkbox"
-                    checked={selectedTiles.some(
-                      (t) =>
-                        t.rowIndex === rowIndex && t.columnIndex === columnIndex
-                    )}
-                    onChange={(event) =>
-                      toggleTile(event.target.checked, rowIndex, columnIndex)
-                    }
-                  />
-                  <span>{value}</span>
-                </label>
-              );
-            })
-          )}
+        <Grid style={{ gridTemplateColumns: `repeat(${gridSize}, 1fr)` }}>
+          {randomizedStuff.slice(0, gridSize * gridSize).map((value, index) => {
+            const rowIndex: number = Math.floor(index / gridSize);
+            const columnIndex: number = index - rowIndex * gridSize;
+            const isInBingo: boolean = isTileInBingo(
+              completeStuffIndices,
+              rowIndex,
+              columnIndex,
+              gridSize
+            );
+            const className: string = isInBingo ? `${label} ${inBingo}` : label;
+            return (
+              <label key={index} className={className}>
+                <input
+                  type="checkbox"
+                  checked={selectedTiles.some(
+                    (t) =>
+                      t.rowIndex === rowIndex && t.columnIndex === columnIndex
+                  )}
+                  onChange={(event) =>
+                    toggleTile(event.target.checked, rowIndex, columnIndex)
+                  }
+                />
+                <span>{value}</span>
+              </label>
+            );
+          })}
         </Grid>
       </form>
     </section>
   );
-}
-
-function isNumberValid(value: number | undefined): boolean {
-  return !!(value || value === 0);
 }
 
 function isTileInBingo(
