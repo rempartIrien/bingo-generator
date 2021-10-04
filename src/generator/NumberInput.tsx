@@ -30,6 +30,7 @@ function NumberInput({
         type="number"
         name="columnNumber"
         step="1"
+        min="1"
         value={value}
         onChange={(event) => handleRawInputValue(event.target.value)}
       />

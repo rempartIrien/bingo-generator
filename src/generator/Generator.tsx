@@ -1,42 +1,81 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { encode } from '../base64.utils';
 import BingoViewer from '../bingo/BingoViewer';
 import { INPUT_DEFAULT_STYLE } from '../style/base-style';
+import { useQueryContext, useUrlContext } from '../url-context.hook';
 
 import LabelInputList from './LabelInputList';
 import NumberInput from './NumberInput';
 import UrlViewer from './UrlViewer';
 
-const HARD_CODED_STUFF: string[] = [
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine'
-];
+const DEFAULT: Record<string, unknown> = {
+  title: 'Digit bingo',
+  size: 3,
+  labels: [
+    'one',
+    'two',
+    'three',
+    'four',
+    'five',
+    'six',
+    'seven',
+    'eight',
+    'nine'
+  ]
+};
+
+const DEFAULT_STRING: string = encode(JSON.stringify(DEFAULT));
 
 function Generator(): JSX.Element {
-  const [labels, setLabels] = useState<string[]>(HARD_CODED_STUFF);
-  const [title, setTitle] = useState<string>('');
-  const [generatedUrl, setGeneratedUrl] = useState<string>('');
-  const [size, setSize] = useState<number>(3);
+  const currentSearch: string | null = useQueryContext();
+  const decryptedContext: Record<string, unknown> | undefined = useUrlContext();
+  const history = useHistory();
+
+  const [labels, setLabels] = useState<string[]>();
+  const [title, setTitle] = useState<string>();
+  const [size, setSize] = useState<number>();
+  const [search, setSearch] = useState<string>();
+  const [generatedUrl, setGeneratedUrl] = useState<string>();
 
   useEffect(() => {
+    if (!currentSearch) {
+      setSearch(`context=${DEFAULT_STRING}`);
+    }
+  }, [currentSearch]);
+
+  useEffect(() => {
+    if (decryptedContext) {
+      setLabels(decryptedContext.labels as string[]);
+      setTitle(decryptedContext.title as string);
+      setSize(decryptedContext.size as number);
+    }
+  }, [decryptedContext]);
+
+  useEffect(() => {
+    if (search) {
+      const url: string = `${document.location.origin}/bingo?${search}`;
+      setGeneratedUrl(url);
+      history.replace({
+        search
+      });
+    }
+  }, [search, history]);
+
+  function updateContext(key: string, value: unknown): void {
     const encodedContext: string = encode(
       JSON.stringify({
-        title,
-        labels,
-        size
+        ...decryptedContext,
+        [key]: value
       })
     );
-    const url: string = `${document.location.origin}/bingo?context=${encodedContext}`;
-    setGeneratedUrl(url);
-  }, [title, labels, size]);
+    setSearch(`context=${encodedContext}`);
+  }
+
+  if (!size || (!title && title !== '') || !labels) {
+    return <p>Wait for a moment...</p>;
+  }
 
   return (
     <section>
@@ -49,16 +88,18 @@ function Generator(): JSX.Element {
             type="text"
             name="title"
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) => updateContext('title', event.target.value)}
           />
         </label>
         <NumberInput
           label="Size"
           value={size}
-          valueChange={setSize}></NumberInput>
+          valueChange={(size) => updateContext('size', size)}></NumberInput>
         <LabelInputList
           labels={labels}
-          labelsChange={setLabels}></LabelInputList>
+          labelsChange={(labels) =>
+            updateContext('labels', labels)
+          }></LabelInputList>
       </form>
       {generatedUrl && <UrlViewer url={generatedUrl}></UrlViewer>}
       <BingoViewer title={title} labels={labels} size={size}></BingoViewer>
