@@ -88,13 +88,45 @@ function LabelInputList({
     }
   }
 
-  function onFocus({ key, shiftKey }: KeyboardEvent, index: number): void {
-    if (key === 'Tab' && !shiftKey && !labels[index]) {
-      setFocusIndex(index);
+  function takeFocusAndSaveCaretPosition(
+    { key, shiftKey }: KeyboardEvent,
+    index: number
+  ): void {
+    if (key === 'Tab') {
+      if (!shiftKey && !labels[index]) {
+        // Select next label with current index since the current label
+        // disappears
+        setFocusIndex(index);
+        setCaretSelection({
+          start: 0,
+          end: labels[index + 1].length,
+          inputIndex: index
+        });
+      } else if (shiftKey) {
+        // Select previous label
+        const inputIndex: number = index - 1;
+        if (inputIndex > labels.length - 1) {
+          setCaretSelection({
+            start: 0,
+            end: labels[inputIndex].length,
+            inputIndex
+          });
+        }
+      } else {
+        // Select next label
+        const inputIndex: number = index + 1;
+        if (inputIndex > labels.length - 1) {
+          setCaretSelection({
+            start: 0,
+            end: labels[inputIndex].length,
+            inputIndex
+          });
+        }
+      }
     } else {
       setFocusIndex(void 0);
+      setCaretSelection(void 0);
     }
-    setCaretSelection(void 0);
   }
 
   return (
@@ -110,7 +142,7 @@ function LabelInputList({
               name={`label_${index}`}
               value={label}
               onChange={(event) => setLabel(event.target.value, index)}
-              onKeyDown={(event) => onFocus(event, index)}
+              onKeyDown={(event) => takeFocusAndSaveCaretPosition(event, index)}
               onBlur={(event) => removeLabelIfNeeded(event.target.value, index)}
             />
           </li>
