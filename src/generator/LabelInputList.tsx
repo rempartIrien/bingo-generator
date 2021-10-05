@@ -14,11 +14,18 @@ interface LabelInputListPropos {
   labelsChange: (labels: string[]) => unknown;
 }
 
+interface CaretSelection {
+  inputIndex: number;
+  start: number | null;
+  end: number | null;
+}
+
 function LabelInputList({
   labels,
   labelsChange
 }: LabelInputListPropos): JSX.Element {
   const [focusIndex, setFocusIndex] = useState<number>();
+  const [caretSelection, setCaretSelection] = useState<CaretSelection>();
   const newLabelInputRef: RefObject<HTMLInputElement> = useRef(null);
   const inputRefs: (HTMLInputElement | null)[] = useMemo(
     () => [...Array(labels.length)].map(() => null),
@@ -35,12 +42,28 @@ function LabelInputList({
     }
   }, [inputRefs, focusIndex]);
 
+  // Wait for labels change to set caret position in edited input
+  useEffect(() => {
+    if (caretSelection) {
+      const ref: HTMLInputElement | null = inputRefs[caretSelection.inputIndex];
+      if (ref) {
+        ref.setSelectionRange(caretSelection.start, caretSelection.end);
+      }
+    }
+  }, [labels, inputRefs, caretSelection]);
+
   function setLabel(value: string, index: number): void {
     const newLabels: string[] = [
       ...labels.slice(0, index),
       value,
       ...labels.slice(index + 1)
     ];
+    const ref: HTMLInputElement | null = inputRefs[index];
+    if (ref) {
+      const start: number | null = ref.selectionStart;
+      const end: number | null = ref.selectionEnd;
+      setCaretSelection({ inputIndex: index, start, end });
+    }
     labelsChange(newLabels);
   }
 
@@ -71,6 +94,7 @@ function LabelInputList({
     } else {
       setFocusIndex(void 0);
     }
+    setCaretSelection(void 0);
   }
 
   return (
