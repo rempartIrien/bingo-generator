@@ -10,12 +10,15 @@ export const CSS_VARIABLES = {
   backgroundColor: '--color-background'
 };
 
+export const DARK_BACKGROUND_COLOR: string = '#000';
+export const LIGHT_BACKGROUND_COLOR: string = '#fff';
+
 export const LIGHT_THEME: string = css`
   ${CSS_VARIABLES.primaryColor}: #f60;
   ${CSS_VARIABLES.selectColor}: #e16;
   ${CSS_VARIABLES.regularTextColor}: #000;
   ${CSS_VARIABLES.selectTextColor}: #fff;
-  ${CSS_VARIABLES.backgroundColor}: #fff;
+  ${CSS_VARIABLES.backgroundColor}: ${LIGHT_BACKGROUND_COLOR};
 `;
 
 export const DARK_THEME: string = css`
@@ -23,5 +26,24 @@ export const DARK_THEME: string = css`
   ${CSS_VARIABLES.selectColor}: #e16;
   ${CSS_VARIABLES.regularTextColor}: #fff;
   ${CSS_VARIABLES.selectTextColor}: #fff;
-  ${CSS_VARIABLES.backgroundColor}: #000;
+  ${CSS_VARIABLES.backgroundColor}: ${DARK_BACKGROUND_COLOR};
+`;
+
+export const INPUT_DEFAULT_STYLE: string = css`
+  color: var(${CSS_VARIABLES.primaryColor});
+  background-color: var(${CSS_VARIABLES.backgroundColor});
+`;
+
+export const LINK_DEFAULT_STYLE: string = css`
+  text-decoration: none;
+
+  &,
+  &:hover,
+  &:visited {
+    color: var(${CSS_VARIABLES.selectColor});
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;

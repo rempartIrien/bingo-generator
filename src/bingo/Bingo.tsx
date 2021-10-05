@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
+import { LINK_DEFAULT_STYLE } from '../style';
 import { Context, useUrlContext } from '../url-context.hook';
 
 import BingoViewer from './BingoViewer';
@@ -18,7 +19,11 @@ function Bingo(): JSX.Element {
 
   return (
     <>
-      <Link to={{ pathname: '/generator', search }}>Edit this bingo</Link>
+      <Link
+        className={LINK_DEFAULT_STYLE}
+        to={{ pathname: '/generator', search }}>
+        Edit this bingo
+      </Link>
       <BingoViewer
         title={decryptedContext.title as string}
         labels={decryptedContext.labels as string[]}

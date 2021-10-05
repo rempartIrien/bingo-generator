@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { INPUT_DEFAULT_STYLE } from '../style/base-style';
+import { INPUT_DEFAULT_STYLE } from '../style';
 
 interface NumberInputProps {
   label: string;

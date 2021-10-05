@@ -1,14 +1,14 @@
 import { css } from '@linaria/core';
 import React from 'react';
 
+import { LINK_DEFAULT_STYLE } from '../style';
+
 interface UrlViewerProps {
   url: string;
 }
 
 const a: string = css`
-   {
-    word-break: break-word;
-  }
+  word-break: break-word;
 `;
 
 function UrlViewer({ url }: UrlViewerProps): JSX.Element {
@@ -20,7 +20,11 @@ function UrlViewer({ url }: UrlViewerProps): JSX.Element {
     <>
       <p>
         Bingo url:{' '}
-        <a className={a} target="_blank" rel="noreferrer noopener" href={url}>
+        <a
+          className={`${LINK_DEFAULT_STYLE} ${a}`}
+          target="_blank"
+          rel="noreferrer noopener"
+          href={url}>
           {url}
         </a>
       </p>

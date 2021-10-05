@@ -5,7 +5,12 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import Menu from './layout/Menu';
 import ThemeSwitcher from './layout/ThemeSwitcher';
 import { ABOUT_ROUTE, BINGO_ROUTE, GENERATOR_ROUTE } from './routes';
-import { DARK_THEME, LIGHT_THEME } from './style/theme.model';
+import {
+  DARK_BACKGROUND_COLOR,
+  DARK_THEME,
+  LIGHT_BACKGROUND_COLOR,
+  LIGHT_THEME
+} from './style';
 
 const Main = styled.main`
   font-size: 1.6rem;
@@ -38,10 +43,10 @@ function App(): JSX.Element {
     // CSS variabels defined for one of its children...
     if (isDarkMode) {
       setMainClassName(DARK_THEME);
-      document.body.style.backgroundColor = '#000';
+      document.body.style.backgroundColor = DARK_BACKGROUND_COLOR;
     } else {
       setMainClassName(LIGHT_THEME);
-      document.body.style.backgroundColor = '#fff';
+      document.body.style.backgroundColor = LIGHT_BACKGROUND_COLOR;
     }
   }, [isDarkMode]);
 

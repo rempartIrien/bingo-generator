@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import { encode } from '../base64.utils';
 import BingoViewer from '../bingo/BingoViewer';
-import { INPUT_DEFAULT_STYLE } from '../style/base-style';
+import { INPUT_DEFAULT_STYLE } from '../style';
 import { Context, useUrlContext } from '../url-context.hook';
 
 import LabelInputList from './LabelInputList';

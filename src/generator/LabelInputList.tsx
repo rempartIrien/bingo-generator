@@ -7,7 +7,7 @@ import React, {
   useState
 } from 'react';
 
-import { INPUT_DEFAULT_STYLE } from '../style/base-style';
+import { INPUT_DEFAULT_STYLE } from '../style';
 
 interface LabelInputListPropos {
   labels: string[];

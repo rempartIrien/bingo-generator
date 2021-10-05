@@ -2,6 +2,8 @@ import { css } from '@linaria/core';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { LINK_DEFAULT_STYLE } from '../style';
+
 const list = css`
   display: flex;
   padding: 0;
@@ -15,30 +17,16 @@ const item: string = css`
   }
 `;
 
-const link: string = css`
-  text-decoration: none;
-
-  &,
-  &:hover,
-  &:visited {
-    color: var(--color-select);
-  }
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
 function Menu(): JSX.Element {
   return (
     <ol className={list}>
       <li className={item}>
-        <Link className={link} to="/">
+        <Link className={LINK_DEFAULT_STYLE} to="/">
           Home
         </Link>
       </li>
       <li className={item}>
-        <Link className={link} to="/about">
+        <Link className={LINK_DEFAULT_STYLE} to="/about">
           About
         </Link>
       </li>
